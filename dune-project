@@ -25,5 +25,7 @@
   dune-release
   ocaml-lsp-server
   odoc
+  tls-eio
+  ca-certs
   (ocamlformat
    (= 0.27.0))))
