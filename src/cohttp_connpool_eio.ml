@@ -160,3 +160,45 @@ let patch ~sw ?body ?chunked ?headers t ?query ?userinfo route =
 let call ~sw ?body ?chunked ?headers t ?query ?userinfo m route =
   call ~sw t ?query ?userinfo route @@ fun conn uri ->
   Cohttp_eio.Client.call ?body ?chunked ?headers ~sw:conn.sw conn.client m uri
+
+module Strict = struct
+  let call ?body ?chunked ?headers t ?query ?userinfo m route =
+    Eio.Switch.run ~name:"Cohttp_connpool_eio.Strict.call" @@ fun sw ->
+    let status, body =
+      call ~sw ?body ?chunked ?headers t ?query ?userinfo m route
+    in
+    (status, Eio.Buf_read.(parse_exn take_all) body ~max_size:max_int)
+
+  let get ?headers t ?query ?userinfo route =
+    Eio.Switch.run ~name:"Cohttp_connpool_eio.Strict.get" @@ fun sw ->
+    let status, body = get ~sw ?headers t ?query ?userinfo route in
+    (status, Eio.Buf_read.(parse_exn take_all) body ~max_size:max_int)
+
+  let post ?body ?chunked ?headers t ?query ?userinfo route =
+    Eio.Switch.run ~name:"Cohttp_connpool_eio.Strict.post" @@ fun sw ->
+    let status, body =
+      post ~sw ?body ?chunked ?headers t ?query ?userinfo route
+    in
+    (status, Eio.Buf_read.(parse_exn take_all) body ~max_size:max_int)
+
+  let put ?body ?chunked ?headers t ?query ?userinfo route =
+    Eio.Switch.run ~name:"Cohttp_connpool_eio.Strict.put" @@ fun sw ->
+    let status, body =
+      put ~sw ?body ?chunked ?headers t ?query ?userinfo route
+    in
+    (status, Eio.Buf_read.(parse_exn take_all) body ~max_size:max_int)
+
+  let patch ?body ?chunked ?headers t ?query ?userinfo route =
+    Eio.Switch.run ~name:"Cohttp_connpool_eio.Strict.patch" @@ fun sw ->
+    let status, body =
+      patch ~sw ?body ?chunked ?headers t ?query ?userinfo route
+    in
+    (status, Eio.Buf_read.(parse_exn take_all) body ~max_size:max_int)
+
+  let delete ?body ?chunked ?headers t ?query ?userinfo route =
+    Eio.Switch.run ~name:"Cohttp_connpool_eio.Strict.delete" @@ fun sw ->
+    let status, body =
+      delete ~sw ?body ?chunked ?headers t ?query ?userinfo route
+    in
+    (status, Eio.Buf_read.(parse_exn take_all) body ~max_size:max_int)
+end

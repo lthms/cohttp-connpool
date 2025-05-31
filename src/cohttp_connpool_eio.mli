@@ -290,3 +290,64 @@ val delete :
       A tuple containing the HTTP response and its body. The body will be
       consumed on [sw]’s release, in order to enable the reuse of the
       connection. *)
+
+module Strict : sig
+  val call :
+    ?body:Cohttp_eio.Body.t ->
+    ?chunked:bool ->
+    ?headers:Http.Header.t ->
+    t ->
+    ?query:(string * string list) list ->
+    ?userinfo:string ->
+    Http.Method.t ->
+    string ->
+    Http.Response.t * string
+
+  val get :
+    ?headers:Http.Header.t ->
+    t ->
+    ?query:(string * string list) list ->
+    ?userinfo:string ->
+    string ->
+    Http.Response.t * string
+
+  val post :
+    ?body:Cohttp_eio.Body.t ->
+    ?chunked:bool ->
+    ?headers:Http.Header.t ->
+    t ->
+    ?query:(string * string list) list ->
+    ?userinfo:string ->
+    string ->
+    Http.Response.t * string
+
+  val put :
+    ?body:Cohttp_eio.Body.t ->
+    ?chunked:bool ->
+    ?headers:Http.Header.t ->
+    t ->
+    ?query:(string * string list) list ->
+    ?userinfo:string ->
+    string ->
+    Http.Response.t * string
+
+  val patch :
+    ?body:Cohttp_eio.Body.t ->
+    ?chunked:bool ->
+    ?headers:Http.Header.t ->
+    t ->
+    ?query:(string * string list) list ->
+    ?userinfo:string ->
+    string ->
+    Http.Response.t * string
+
+  val delete :
+    ?body:Cohttp_eio.Body.t ->
+    ?chunked:bool ->
+    ?headers:Http.Header.t ->
+    t ->
+    ?query:(string * string list) list ->
+    ?userinfo:string ->
+    string ->
+    Http.Response.t * string
+end

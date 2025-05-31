@@ -23,6 +23,7 @@ let https ~authenticator =
       |> Option.map (fun x -> Domain_name.(host_exn (of_string_exn x)))
     in
     Tls_eio.client_of_flow ?host tls_config raw
+
 (* -------- *)
 
 let () =
@@ -35,9 +36,5 @@ let () =
       ~sw ~net:env#net ~n:10
       (Uri.of_string "https://soap.coffee/~lthms")
   in
-  let str =
-    Switch.run ~name:"request" @@ fun sw ->
-    let _, body = Cohttp_connpool_eio.get connpool ~sw "/posts/posts" in
-    Eio.Buf_read.(parse_exn take_all) body ~max_size:max_int
-  in
-  Format.printf "%s\n%!" str
+  let _, body = Cohttp_connpool_eio.Strict.get connpool "/posts/posts" in
+  Format.printf "%s\n%!" body
