@@ -165,6 +165,12 @@ let call ~sw ?body ?chunked ?headers t ?query ?userinfo m route =
   call ~sw t ?query ?userinfo route @@ fun conn uri ->
   Cohttp_eio.Client.call ?body ?chunked ?headers ~sw:conn.sw conn.client m uri
 
+let warm t path =
+  Eio.Switch.run ~name:"Cohttp_eio.warm" @@ fun sw ->
+  Eio.Fiber.List.iter
+    (fun _ -> ignore (call ~sw t `HEAD path))
+    (Seq.ints 0 |> Seq.take t.pool_size |> List.of_seq)
+
 module Strict = struct
   let call ?body ?chunked ?headers t ?query ?userinfo m route =
     Eio.Switch.run ~name:"Cohttp_connpool_eio.Strict.call" @@ fun sw ->

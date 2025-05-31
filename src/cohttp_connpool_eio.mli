@@ -34,6 +34,8 @@ val make :
       will be used.
     @return A new connection pool instance. *)
 
+val warm : t -> string -> unit
+
 val call :
   sw:Eio.Std.Switch.t ->
   ?body:Cohttp_eio.Body.t ->
