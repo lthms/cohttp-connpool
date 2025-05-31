@@ -1,4 +1,4 @@
 (library
   (name cohttp_connpool_eio)
-  (package cohttp-connpool-eio)
+  (public_name cohttp-connpool-eio)
   (libraries cohttp-eio))
