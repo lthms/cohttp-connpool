@@ -12,7 +12,11 @@
  (name cohttp-connpool-eio)
  (version "0.1.0")
  (synopsis "Pool of persistent HTTP connections")
- (description "A short description of the cohttp-connpool-eio package.")
+ (description
+"This library provides a connection pool for cohttp-eio, enabling efficient
+reuse of HTTP connections within an Eio application. This helps reduce
+latency and resource overhead by minimizing the need to establish new TCP
+connections for each request.")
  (homepage "https://github.com/lthms/cohttp-connpool-eio")
  (bug_reports "https://github.com/lthms/cohttp-connpool-eio#issues")
  (documentation "https://github.com/lthms/cohttp-connpool-eio#readme")
