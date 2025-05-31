@@ -68,10 +68,22 @@ let use t k =
   in
   use t.pool_size
 
-let get ?headers t route =
-  use t @@ fun conn ->
+let get_conn ~sw t =
+  let x, rx = Eio.Promise.create () in
+  let never, _ = Eio.Promise.create () in
+  Eio.Fiber.fork_daemon ~sw (fun () ->
+      use t @@ fun conn ->
+      Eio.Promise.resolve rx conn;
+      Eio.Promise.await never);
+  Eio.Promise.await x
+
+let get ~sw ?headers t route =
+  let conn = get_conn ~sw t in
   let uri = Uri.with_path conn.endpoint route in
   let response, body =
     Cohttp_eio.Client.get ?headers ~sw:conn.sw conn.client uri
   in
-  (response, Eio.Buf_read.(parse_exn take_all) body ~max_size:max_int)
+  Eio.Switch.on_release sw (fun () ->
+      (* We force the full body to be read, so that the next  *)
+      ignore (Eio.Buf_read.(parse_exn take_all) body ~max_size:max_int));
+  (response, body)

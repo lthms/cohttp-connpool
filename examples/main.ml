@@ -7,5 +7,9 @@ let () =
     Cohttp_connpool_eio.make ~sw ~net:env#net ~n:10
       (Uri.of_string "http://google.com")
   in
-  let _, str = Cohttp_connpool_eio.get connpool "/" in
+  let str =
+    Switch.run ~name:"request" @@ fun sw ->
+    let _, body = Cohttp_connpool_eio.get connpool ~sw "/" in
+    Eio.Buf_read.(parse_exn take_all) body ~max_size:max_int
+  in
   Format.printf "%s\n%!" str
