@@ -36,5 +36,6 @@ let () =
       ~sw ~net:env#net ~n:10
       (Uri.of_string "https://soap.coffee/~lthms")
   in
-  let _, body = Cohttp_connpool_eio.Strict.get connpool "/posts/posts" in
+  let _, _ = Cohttp_connpool_eio.Strict.get connpool "/posts" in
+  let _, body = Cohttp_connpool_eio.Strict.get connpool "/posts" in
   Format.printf "%s\n%!" body
