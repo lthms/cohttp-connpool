@@ -2,7 +2,8 @@ type connection = {
   client : Cohttp_eio.Client.t;
   sw : Eio.Switch.t;
   endpoint : Uri.t;
-  socket : [ `Generic ] Eio.Net.stream_socket_ty Eio.Resource.t;
+  raw_socket : [ `Generic ] Eio.Net.stream_socket_ty Eio.Resource.t;
+  socket : Eio.Flow.two_way_ty Eio.Std.r;
   mutable alive : bool;
 }
 
@@ -22,33 +23,60 @@ let tcp_address ~net uri =
   | ip :: _ -> ip
   | [] -> failwith "failed to resolve hostname"
 
-let make_connection ~sw ~net endpoint =
+let make_connection ~wrap ~sw ~net endpoint =
   let net = (net :> [ `Generic ] Eio.Net.ty Eio.Std.r) in
+  let wrap =
+    (wrap
+      :> [ `Generic ] Eio.Net.stream_socket_ty Eio.Resource.t ->
+         Eio.Flow.two_way_ty Eio.Std.r)
+  in
   let sockaddr = tcp_address ~net endpoint in
-  let socket = Eio.Net.connect ~sw net sockaddr in
+  let raw_socket = Eio.Net.connect ~sw net sockaddr in
+  let socket = wrap raw_socket in
   {
     client = Cohttp_eio.Client.make_generic (fun ~sw:_ _uri -> socket);
     sw;
     endpoint;
+    raw_socket;
     socket;
     alive = true;
   }
 
-let make ~sw ~net ~n uri =
+let make ~sw ~https ~net ~n uri =
+  let https =
+    (https
+      :> (Uri.t ->
+         [ `Generic ] Eio.Net.stream_socket_ty Eio.Std.r ->
+         Eio.Flow.two_way_ty Eio.Std.r)
+         option)
+  in
+  let wrap =
+    match Uri.scheme uri with
+    | Some "http" -> fun x -> (x :> Eio.Flow.two_way_ty Eio.Std.r)
+    | Some "https" -> (
+        match https with
+        | Some wrap -> wrap uri
+        | None -> raise (Invalid_argument "missing HTTPS information"))
+    | Some unsupported ->
+        raise
+          (Invalid_argument Format.(sprintf "unsupported scheme %s" unsupported))
+    | None -> raise (Invalid_argument "missing scheme")
+  in
   {
     pool =
       Eio.Pool.create
         ~validate:(fun conn -> conn.alive)
         ~dispose:(fun conn ->
           Eio.traceln "disposing";
-          Eio.Net.close conn.socket)
+          Eio.Flow.shutdown conn.socket `All;
+          Eio.Net.close conn.raw_socket)
         n
-        (fun () -> make_connection ~sw ~net uri);
+        (fun () -> make_connection ~wrap ~sw ~net uri);
     pool_size = n;
   }
 
-exception Invalidated_socket
-exception Broken_pool
+exception Invalidated_socket (* private *)
+exception Broken_pool (* public *)
 
 let invalidates_socket = function
   | Eio.Io (Eio.Net.E (Connection_reset _), _) | End_of_file | Failure _ -> true
