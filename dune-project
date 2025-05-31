@@ -4,14 +4,19 @@
 
 (name cohttp-connpool-eio)
 
+(maintainers "Thomas Letan <lthms@soap.coffee>")
+(authors "Thomas Letan <lthms@soap.coffee>")
+(source (github lthms/cohttp-connpool-eio))
+
 (package
  (name cohttp-connpool-eio)
  (version "0.1.0")
  (synopsis "Pool of persistent HTTP connections")
  (description "A short description of the cohttp-connpool-eio package.")
- (maintainers "Thomas Letan <lthms@soap.coffee>")
  (homepage "https://github.com/lthms/cohttp-connpool-eio")
+ (bug_reports "https://github.com/lthms/cohttp-connpool-eio#issues")
  (documentation "https://github.com/lthms/cohttp-connpool-eio#readme")
+ (license "mpl-2.0")
  (depends dune cohttp-eio logs))
 
 (package
