@@ -128,15 +128,28 @@ let make_uri uri ?query ?userinfo route =
   in
   uri
 
-let call ~sw t ?query ?userinfo route h =
+let call ?(is_head = false) ~sw t ?query ?userinfo route h =
   let conn = get_conn ~sw t in
   let uri = make_uri conn.endpoint ?query ?userinfo route in
   let response, body = h conn uri in
   if Http.Header.get_connection_close (Http.Response.headers response) then
     dispose conn;
   Eio.Switch.on_release sw (fun () ->
-      (* We force the full body to be read, so that the next  *)
-      ignore (Eio.Buf_read.(parse_exn take_all) body ~max_size:max_int));
+      (* We force the full body to be read before putting the connection back
+         to the pool. We only do that if the call wasn’t a HEAD request (as
+         HEAD requests do not have bodies).
+
+         Note that this is not unusual. Typically, this is the difference
+         between `-X HEAD` and `--head` with curl. One likely hangs waiting for
+         the body, the other do not.
+
+         A non-compliant HTTP server sending a body to a HEAD request will make
+         the next request using the tainted connection fail.
+
+         In any case, this is consistent with the `Cohttp_eio.Client.head`
+         function which simply ignores the body. *)
+      if not is_head then
+        ignore (Eio.Buf_read.(parse_exn take_all) body ~max_size:max_int));
   (response, body)
 
 let head ?headers t ?query ?userinfo route =
@@ -166,7 +179,7 @@ let patch ~sw ?body ?chunked ?headers t ?query ?userinfo route =
   Cohttp_eio.Client.patch ?body ?chunked ?headers ~sw:conn.sw conn.client uri
 
 let call ~sw ?body ?chunked ?headers t ?query ?userinfo m route =
-  call ~sw t ?query ?userinfo route @@ fun conn uri ->
+  call ~is_head:(m = `HEAD) ~sw t ?query ?userinfo route @@ fun conn uri ->
   Cohttp_eio.Client.call ?body ?chunked ?headers ~sw:conn.sw conn.client m uri
 
 let warm t path =
