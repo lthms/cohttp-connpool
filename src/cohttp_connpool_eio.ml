@@ -126,6 +126,8 @@ let call ~sw t ?query ?userinfo route h =
   let conn = get_conn ~sw t in
   let uri = make_uri conn.endpoint ?query ?userinfo route in
   let response, body = h conn uri in
+  if Http.Header.get_connection_close (Http.Response.headers response) then
+    conn.alive <- false;
   Eio.Switch.on_release sw (fun () ->
       (* We force the full body to be read, so that the next  *)
       ignore (Eio.Buf_read.(parse_exn take_all) body ~max_size:max_int));
