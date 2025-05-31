@@ -42,6 +42,12 @@ let make_connection ~wrap ~sw ~net endpoint =
     alive = true;
   }
 
+let dispose conn =
+  if conn.alive then (
+    (try Eio.Flow.shutdown conn.socket `All with _ -> ());
+    Eio.Net.close conn.raw_socket);
+  conn.alive <- false
+
 let make ~sw ~https ~net ~n uri =
   let https =
     (https
@@ -66,10 +72,6 @@ let make ~sw ~https ~net ~n uri =
     pool =
       Eio.Pool.create
         ~validate:(fun conn -> conn.alive)
-        ~dispose:(fun conn ->
-          Eio.traceln "disposing";
-          Eio.Flow.shutdown conn.socket `All;
-          Eio.Net.close conn.raw_socket)
         n
         (fun () -> make_connection ~wrap ~sw ~net uri);
     pool_size = n;
@@ -89,7 +91,7 @@ let use t k =
           Eio.Pool.use t.pool @@ fun conn ->
           try k conn
           with exn when invalidates_socket exn ->
-            conn.alive <- false;
+            dispose conn;
             raise Invalidated_socket
         with Invalidated_socket -> use (n - 1))
     | _otherwise -> raise Broken_pool
@@ -127,7 +129,7 @@ let call ~sw t ?query ?userinfo route h =
   let uri = make_uri conn.endpoint ?query ?userinfo route in
   let response, body = h conn uri in
   if Http.Header.get_connection_close (Http.Response.headers response) then
-    conn.alive <- false;
+    dispose conn;
   Eio.Switch.on_release sw (fun () ->
       (* We force the full body to be read, so that the next  *)
       ignore (Eio.Buf_read.(parse_exn take_all) body ~max_size:max_int));
