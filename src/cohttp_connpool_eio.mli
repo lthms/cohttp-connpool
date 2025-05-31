@@ -1,12 +1,23 @@
 type t
 
+exception Broken_pool
+
 val make : sw:Eio.Std.Switch.t -> net:_ Eio.Net.t -> n:int -> Uri.t -> t
-val head : ?headers:Http.Header.t -> t -> string -> Http.Response.t
+
+val head :
+  ?headers:Http.Header.t ->
+  t ->
+  ?query:(string * string list) list ->
+  ?userinfo:string ->
+  string ->
+  Http.Response.t
 
 val get :
   sw:Eio.Std.Switch.t ->
   ?headers:Http.Header.t ->
   t ->
+  ?query:(string * string list) list ->
+  ?userinfo:string ->
   string ->
   Http.Response.t * Cohttp_eio.Body.t
 
@@ -16,6 +27,8 @@ val post :
   ?chunked:bool ->
   ?headers:Http.Header.t ->
   t ->
+  ?query:(string * string list) list ->
+  ?userinfo:string ->
   string ->
   Http.Response.t * Cohttp_eio.Body.t
 
@@ -25,6 +38,8 @@ val put :
   ?chunked:bool ->
   ?headers:Http.Header.t ->
   t ->
+  ?query:(string * string list) list ->
+  ?userinfo:string ->
   string ->
   Http.Response.t * Cohttp_eio.Body.t
 
@@ -34,6 +49,8 @@ val patch :
   ?chunked:bool ->
   ?headers:Http.Header.t ->
   t ->
+  ?query:(string * string list) list ->
+  ?userinfo:string ->
   string ->
   Http.Response.t * Cohttp_eio.Body.t
 
@@ -43,6 +60,8 @@ val delete :
   ?chunked:bool ->
   ?headers:Http.Header.t ->
   t ->
+  ?query:(string * string list) list ->
+  ?userinfo:string ->
   string ->
   Http.Response.t * Cohttp_eio.Body.t
 
@@ -52,6 +71,8 @@ val call :
   ?chunked:bool ->
   ?headers:Http.Header.t ->
   t ->
+  ?query:(string * string list) list ->
+  ?userinfo:string ->
   Http.Method.t ->
   string ->
   Http.Response.t * Cohttp_eio.Body.t

@@ -77,41 +77,58 @@ let get_conn ~sw t =
       Eio.Promise.await never);
   Eio.Promise.await x
 
-let call ~sw t route h =
+let concat_path p1 p2 =
+  String.concat "/"
+  @@ (String.split_on_char '/' p1 |> List.filter (( <> ) ""))
+  @ (String.split_on_char '/' p2 |> List.filter (( <> ) ""))
+
+let make_uri uri ?query ?userinfo route =
+  let uri = Uri.with_path uri (concat_path (Uri.path uri) route) in
+  let uri =
+    match query with Some query -> Uri.with_query uri query | None -> uri
+  in
+  let uri =
+    match userinfo with
+    | Some userinfo -> Uri.with_userinfo uri (Some userinfo)
+    | None -> uri
+  in
+  uri
+
+let call ~sw t ?query ?userinfo route h =
   let conn = get_conn ~sw t in
-  let uri = Uri.with_path conn.endpoint route in
+  let uri = make_uri conn.endpoint ?query ?userinfo route in
   let response, body = h conn uri in
   Eio.Switch.on_release sw (fun () ->
       (* We force the full body to be read, so that the next  *)
       ignore (Eio.Buf_read.(parse_exn take_all) body ~max_size:max_int));
   (response, body)
 
-let head ?headers t route =
+let head ?headers t ?query ?userinfo route =
   Eio.Switch.run @@ fun sw ->
   let conn = get_conn ~sw t in
-  let uri = Uri.with_path conn.endpoint route in
+  let uri = make_uri conn.endpoint ?query ?userinfo route in
   Cohttp_eio.Client.head ?headers ~sw:conn.sw conn.client uri
 
-let get ~sw ?headers t route =
-  call ~sw t route @@ fun conn uri ->
+let get ~sw ?headers t ?query ?userinfo route =
+  call ~sw t ?query ?userinfo route @@ fun conn uri ->
   Cohttp_eio.Client.get ?headers ~sw:conn.sw conn.client uri
 
-let post ~sw ?body ?chunked ?headers t route =
-  call ~sw t route @@ fun conn uri ->
+let post ~sw ?body ?chunked ?headers t ?query ?userinfo route =
+  call ~sw t ?query ?userinfo route @@ fun conn uri ->
   Cohttp_eio.Client.post ?body ?chunked ?headers ~sw:conn.sw conn.client uri
 
-let delete ~sw ?body ?chunked ?headers t route =
-  call ~sw t route @@ fun conn uri ->
+let delete ~sw ?body ?chunked ?headers t ?query ?userinfo route =
+  call ~sw t ?query ?userinfo route @@ fun conn uri ->
   Cohttp_eio.Client.delete ?body ?chunked ?headers ~sw:conn.sw conn.client uri
 
-let put ~sw ?body ?chunked ?headers t route =
-  call ~sw t route @@ fun conn uri ->
+let put ~sw ?body ?chunked ?headers t ?query ?userinfo route =
+  call ~sw t ?query ?userinfo route @@ fun conn uri ->
   Cohttp_eio.Client.put ?body ?chunked ?headers ~sw:conn.sw conn.client uri
 
-let patch ~sw ?body ?chunked ?headers t route =
-  call ~sw t route @@ fun conn uri ->
+let patch ~sw ?body ?chunked ?headers t ?query ?userinfo route =
+  call ~sw t ?query ?userinfo route @@ fun conn uri ->
   Cohttp_eio.Client.patch ?body ?chunked ?headers ~sw:conn.sw conn.client uri
 
-let call ~sw ?body ?chunked ?headers t m route =
-  call ~sw t route @@ fun conn uri ->
+let call ~sw ?body ?chunked ?headers t ?query ?userinfo m route =
+  call ~sw t ?query ?userinfo route @@ fun conn uri ->
   Cohttp_eio.Client.call ?body ?chunked ?headers ~sw:conn.sw conn.client m uri
