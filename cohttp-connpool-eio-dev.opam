@@ -7,7 +7,7 @@ authors: ["Thomas Letan <lthms@soap.coffee>"]
 homepage: "https://github.com/lthms/cohttp-connpool-eio"
 bug-reports: "https://github.com/lthms/cohttp-connpool-eio/issues"
 depends: [
-  "dune" {>= "3.19"}
+  "dune" {>= "3.14"}
   "eio_main"
   "dune-release"
   "ocaml-lsp-server"
@@ -31,4 +31,3 @@ build: [
   ]
 ]
 dev-repo: "git+https://github.com/lthms/cohttp-connpool-eio.git"
-x-maintenance-intent: ["(latest)"]
