@@ -40,7 +40,7 @@ let () =
       ~sw ~net:env#net ~n:10
       (Uri.of_string "https://soap.coffee/~lthms")
   in
-  Cohttp_connpool_eio.warm connpool "";
+  Cohttp_connpool_eio.warm connpool;
   Fiber.both
     (fun () ->
       let _, body = Cohttp_connpool_eio.Strict.get connpool "/posts" in
