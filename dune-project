@@ -2,7 +2,7 @@
 
 (generate_opam_files true)
 
-(name cohttp-connpool-eio)
+(name cohttp-connpool)
 
 (maintainers "Thomas Letan <lthms@soap.coffee>")
 (authors "Thomas Letan <lthms@soap.coffee>")
@@ -25,7 +25,7 @@ connections for each request.")
 
 (package
  (allow_empty)
- (name cohttp-connpool-eio-dev)
+ (name cohttp-connpool-dev)
  (maintainers "Thomas Letan <lthms@soap.coffee>")
  (synopsis
   "Virtual package gathering developers dependencies for hacking this project")
