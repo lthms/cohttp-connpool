@@ -50,6 +50,7 @@ connections for each request.")
   ocaml-lsp-server
   cohttp-connpool-lwt-unix
   cohttp-connpool-eio
+  lwt_eio
   lwt_ssl
   odoc
   tls-eio

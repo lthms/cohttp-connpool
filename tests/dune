@@ -1,0 +1,3 @@
+(executable
+  (name main)
+  (libraries cohttp-lwt-unix lwt_eio eio_main cohttp-connpool-lwt-unix))
