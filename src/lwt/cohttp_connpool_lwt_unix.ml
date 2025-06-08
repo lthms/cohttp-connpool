@@ -2,14 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. *)
 
-type t = {
-  cache : Cohttp_lwt_unix.Connection_cache.t;
-  pool_size : int;
-  endpoint : Uri.t;
-}
+type t = { cache : Connection_cache.t; pool_size : int; endpoint : Uri.t }
 
 let make ~n uri =
-  let cache = Cohttp_lwt_unix.Connection_cache.create ~parallel:n () in
+  let cache = Connection_cache.create ~retry:n ~parallel:n () in
   { cache; endpoint = uri; pool_size = n }
 
 let concat_path p1 p2 =
@@ -37,9 +33,7 @@ let call ~sw ?body ?(chunked = false) ?(headers = Cohttp.Header.init ()) t
     else headers
   in
   let uri = make_uri ?query ?userinfo t.endpoint route in
-  let* resp, body =
-    Cohttp_lwt_unix.Connection_cache.call ?body ~headers t.cache m uri
-  in
+  let* resp, body = Connection_cache.call ?body ~headers t.cache m uri in
   if m <> `HEAD then
     Lwt_switch.add_hook (Some sw) (fun () -> Cohttp_lwt.Body.drain_body body);
   Lwt.return (resp, body)
