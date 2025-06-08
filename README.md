@@ -22,3 +22,14 @@ let () =
     (Eio.Buf_read.(parse_exn take_all) body ~max_size:max_int)
 ```
 
+## Building from source
+
+To quickly set up a development environment for this project, you can leverage
+`dune pkg lock`. This command automatically resolves and fetches all necessary
+dependencies, ensuring a reproducible environment with minimal manual setup.
+
+```sh
+dune pkg lock
+```
+
+Once the dependencies are locked, you can build the project using `dune build`.
