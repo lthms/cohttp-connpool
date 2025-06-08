@@ -38,13 +38,25 @@ let call ~sw ?body ?(chunked = false) ?(headers = Cohttp.Header.init ()) t
     Lwt_switch.add_hook (Some sw) (fun () -> Cohttp_lwt.Body.drain_body body);
   Lwt.return (resp, body)
 
-let get ~sw ?chunked ?headers t ?query ?userinfo route =
-  call ~sw ?chunked ?headers ?query ?userinfo t `GET route
-
-let head ~sw ?chunked ?headers t ?query ?userinfo route =
+let head ~sw ?headers t ?query ?userinfo route =
   let open Lwt.Syntax in
-  let+ resp, _ = call ~sw ?chunked ?headers ?query ?userinfo t `HEAD route in
+  let+ resp, _ = call ~sw ?headers ?query ?userinfo t `HEAD route in
   resp
+
+let get ~sw ?headers t ?query ?userinfo route =
+  call ~sw ?headers ?query ?userinfo t `GET route
+
+let post ~sw ?body ?chunked ?headers t ?query ?userinfo route =
+  call ~sw ?body ?chunked ?headers ?query ?userinfo t `POST route
+
+let put ~sw ?body ?chunked ?headers t ?query ?userinfo route =
+  call ~sw ?body ?chunked ?headers ?query ?userinfo t `PUT route
+
+let patch ~sw ?body ?chunked ?headers t ?query ?userinfo route =
+  call ~sw ?body ?chunked ?headers ?query ?userinfo t `PATCH route
+
+let delete ~sw ?body ?chunked ?headers t ?query ?userinfo route =
+  call ~sw ?body ?chunked ?headers ?query ?userinfo t `DELETE route
 
 let warm t =
   Lwt_switch.with_switch @@ fun sw ->
@@ -65,6 +77,18 @@ module Strict = struct
     let+ body = Cohttp_lwt.Body.to_string body in
     (resp, body)
 
-  let get ?chunked ?headers t ?query ?userinfo route =
-    call ?chunked ?headers ?query ?userinfo t `GET route
+  let get ?headers t ?query ?userinfo route =
+    call ?headers ?query ?userinfo t `GET route
+
+  let post ?body ?chunked ?headers t ?query ?userinfo route =
+    call ?body ?chunked ?headers ?query ?userinfo t `POST route
+
+  let put ?body ?chunked ?headers t ?query ?userinfo route =
+    call ?body ?chunked ?headers ?query ?userinfo t `PUT route
+
+  let patch ?body ?chunked ?headers t ?query ?userinfo route =
+    call ?body ?chunked ?headers ?query ?userinfo t `PATCH route
+
+  let delete ?body ?chunked ?headers t ?query ?userinfo route =
+    call ?body ?chunked ?headers ?query ?userinfo t `DELETE route
 end

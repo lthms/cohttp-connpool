@@ -25,7 +25,7 @@ let () =
 ## Supported backends
 
 * Eio
-* Lwt_unix (incomplete)
+* Lwt_unix
 
 ## Building from source
 
