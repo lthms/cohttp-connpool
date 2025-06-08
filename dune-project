@@ -24,6 +24,21 @@ connections for each request.")
  (depends dune cohttp-eio))
 
 (package
+ (name cohttp-connpool-lwt-unix)
+ (version "0.1.0")
+ (synopsis "Pool of persistent HTTP connections")
+ (description
+"This library provides a connection pool for cohttp-lwt-unix, enabling
+efficient reuse of HTTP connections within a Lwt application. This helps reduce
+latency and resource overhead by minimizing the need to establish new TCP
+connections for each request.")
+ (homepage "https://github.com/lthms/cohttp-connpool-eio")
+ (bug_reports "https://github.com/lthms/cohttp-connpool-eio#issues")
+ (documentation "https://github.com/lthms/cohttp-connpool-eio#readme")
+ (license "mpl-2.0")
+ (depends dune cohttp-lwt-unix))
+
+(package
  (allow_empty)
  (name cohttp-connpool-dev)
  (maintainers "Thomas Letan <lthms@soap.coffee>")
@@ -33,6 +48,9 @@ connections for each request.")
   eio_main ; necessary to run examples
   dune-release
   ocaml-lsp-server
+  cohttp-connpool-lwt-unix
+  cohttp-connpool-eio
+  lwt_ssl
   odoc
   tls-eio
   ca-certs

@@ -1,0 +1,4 @@
+(library
+  (name cohttp_connpool_lwt_unix)
+  (public_name cohttp-connpool-lwt-unix)
+  (libraries cohttp-lwt-unix))
