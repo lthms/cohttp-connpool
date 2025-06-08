@@ -66,7 +66,5 @@ module Strict = struct
     (resp, body)
 
   let get ?chunked ?headers t ?query ?userinfo route =
-    let open Lwt.Syntax in
-    let+ resp, _ = call ?chunked ?headers ?query ?userinfo t `GET route in
-    resp
+    call ?chunked ?headers ?query ?userinfo t `GET route
 end

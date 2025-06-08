@@ -60,5 +60,5 @@ module Strict : sig
     ?query:(string * string list) list ->
     ?userinfo:string ->
     string ->
-    Http.Response.t Lwt.t
+    (Http.Response.t * string) Lwt.t
 end
