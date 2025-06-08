@@ -21,7 +21,7 @@ connections for each request.")
  (bug_reports "https://github.com/lthms/cohttp-connpool-eio#issues")
  (documentation "https://github.com/lthms/cohttp-connpool-eio#readme")
  (license "mpl-2.0")
- (depends dune cohttp-eio logs))
+ (depends dune cohttp-eio))
 
 (package
  (allow_empty)

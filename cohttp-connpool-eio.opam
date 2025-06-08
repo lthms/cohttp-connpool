@@ -16,7 +16,6 @@ bug-reports: "https://github.com/lthms/cohttp-connpool-eio#issues"
 depends: [
   "dune" {>= "3.14"}
   "cohttp-eio"
-  "logs"
   "odoc" {with-doc}
 ]
 build: [
