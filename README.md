@@ -1,9 +1,9 @@
-# `cohttp-connpool-eio`
+# `cohttp-connpool`
 
-This library provides a connection pool for `cohttp-eio`, enabling efficient
-reuse of HTTP connections within an Eio application. This helps reduce latency
-and resource overhead by minimizing the need to establish new TCP connections
-for each request.
+This library provides a connection pool for `cohttp` backends, enabling
+efficient reuse of HTTP connections. This helps reduce latency and resource
+overhead by minimizing the need to establish new TCP connections for each
+request.
 
 ```ocaml
 open Eio.Std
@@ -21,6 +21,11 @@ let () =
   Eio.traceln "Body: %s"
     (Eio.Buf_read.(parse_exn take_all) body ~max_size:max_int)
 ```
+
+## Supported backends
+
+* Eio
+* Lwt_unix (incomplete)
 
 ## Building from source
 

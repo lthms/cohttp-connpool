@@ -6,7 +6,7 @@
 
 (maintainers "Thomas Letan <lthms@soap.coffee>")
 (authors "Thomas Letan <lthms@soap.coffee>")
-(source (github lthms/cohttp-connpool-eio))
+(source (github lthms/cohttp-connpool))
 
 (package
  (name cohttp-connpool-eio)
@@ -32,9 +32,9 @@ connections for each request.")
 efficient reuse of HTTP connections within a Lwt application. This helps reduce
 latency and resource overhead by minimizing the need to establish new TCP
 connections for each request.")
- (homepage "https://github.com/lthms/cohttp-connpool-eio")
- (bug_reports "https://github.com/lthms/cohttp-connpool-eio#issues")
- (documentation "https://github.com/lthms/cohttp-connpool-eio#readme")
+ (homepage "https://github.com/lthms/cohttp-connpool")
+ (bug_reports "https://github.com/lthms/cohttp-connpool#issues")
+ (documentation "https://github.com/lthms/cohttp-connpool#readme")
  (license "mpl-2.0")
  (depends dune cohttp-lwt-unix))
 

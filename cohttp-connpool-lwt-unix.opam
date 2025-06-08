@@ -10,9 +10,9 @@ connections for each request."""
 maintainer: ["Thomas Letan <lthms@soap.coffee>"]
 authors: ["Thomas Letan <lthms@soap.coffee>"]
 license: "mpl-2.0"
-homepage: "https://github.com/lthms/cohttp-connpool-eio"
-doc: "https://github.com/lthms/cohttp-connpool-eio#readme"
-bug-reports: "https://github.com/lthms/cohttp-connpool-eio#issues"
+homepage: "https://github.com/lthms/cohttp-connpool"
+doc: "https://github.com/lthms/cohttp-connpool#readme"
+bug-reports: "https://github.com/lthms/cohttp-connpool#issues"
 depends: [
   "dune" {>= "3.14"}
   "cohttp-lwt-unix"
@@ -32,4 +32,4 @@ build: [
     "@doc" {with-doc}
   ]
 ]
-dev-repo: "git+https://github.com/lthms/cohttp-connpool-eio.git"
+dev-repo: "git+https://github.com/lthms/cohttp-connpool.git"

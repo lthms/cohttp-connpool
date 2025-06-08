@@ -4,8 +4,8 @@ synopsis:
   "Virtual package gathering developers dependencies for hacking this project"
 maintainer: ["Thomas Letan <lthms@soap.coffee>"]
 authors: ["Thomas Letan <lthms@soap.coffee>"]
-homepage: "https://github.com/lthms/cohttp-connpool-eio"
-bug-reports: "https://github.com/lthms/cohttp-connpool-eio/issues"
+homepage: "https://github.com/lthms/cohttp-connpool"
+bug-reports: "https://github.com/lthms/cohttp-connpool/issues"
 depends: [
   "dune" {>= "3.14"}
   "eio_main"
@@ -33,4 +33,4 @@ build: [
     "@doc" {with-doc}
   ]
 ]
-dev-repo: "git+https://github.com/lthms/cohttp-connpool-eio.git"
+dev-repo: "git+https://github.com/lthms/cohttp-connpool.git"

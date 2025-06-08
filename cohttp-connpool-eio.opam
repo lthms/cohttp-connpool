@@ -32,4 +32,4 @@ build: [
     "@doc" {with-doc}
   ]
 ]
-dev-repo: "git+https://github.com/lthms/cohttp-connpool-eio.git"
+dev-repo: "git+https://github.com/lthms/cohttp-connpool.git"
